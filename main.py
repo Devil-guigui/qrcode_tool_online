@@ -1,3 +1,4 @@
+import io
 import flask
 import qrcode
 
@@ -19,8 +20,11 @@ def home():
 def qr():
     data = flask.request.form.get("data")
     img = qrcode.make(data)
-    img.save(r"D:\C\Python实训\day6\代码\qrcode_tool_online\static\qr.png")
-    return '<img src= "static/qr.png"/>'
+    bi = io.BytesIO()  # 分配内存空间  创建一个BytesIO对象，用于在内存中存储二维码图像数据
+    img.save(bi, "png")  # 调用img对象的save方法，将二维码图像数据以PNG编码格式写入bi对象管理的内存空间
+    bi.seek(0)  # 将bi对象内部的位置指针移动到图像数据的起始位置
+    return flask.send_file(bi, "image/png")
+    # return '<img src= "data:image/png;base64,"/>'
 
 
 if __name__ == '__main__':
